@@ -11,6 +11,9 @@
 		"Destination_connection_connectionString": {
 			"value": ""
 		},
+		"Oracle1_connectionString": {
+			"value": ""
+		},
 		"source_connection_connectionString": {
 			"value": ""
 		},
