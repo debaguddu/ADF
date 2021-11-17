@@ -6,7 +6,15 @@
 		"type": "Oracle",
 		"typeProperties": {
 			"connectionString": "host=DESKTOP-OSPORER;port=1521;sid=XE;user id=hr",
-			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiI4NzcxZjIzNS1iMjU2LTQ4NjgtOWViMC02MWU3ZTE4ZTI2YTEiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "AzureKeyVault1",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "IR-Oracle-KeyValue",
+				"secretVersion": "e3ffdec0940541daaed0908e6a183eff"
+			}
 		},
 		"connectVia": {
 			"referenceName": "integrationRuntime1",
