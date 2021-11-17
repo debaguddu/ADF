@@ -17,6 +17,9 @@
 		"source_connection_connectionString": {
 			"value": ""
 		},
+		"AzureKeyVault1_properties_typeProperties_baseUrl": {
+			"value": "https://mkeyvault1991.vault.azure.net/"
+		},
 		"containerUri": {
 			"value": ""
 		},
