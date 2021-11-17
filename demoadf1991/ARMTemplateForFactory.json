@@ -4380,7 +4380,16 @@
 				"annotations": [],
 				"type": "Oracle",
 				"typeProperties": {
-					"connectionString": "[parameters('Oracle1_connectionString')]"
+					"connectionString": "[parameters('Oracle1_connectionString')]",
+					"password": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "AzureKeyVault1",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "IR-Oracle-KeyValue",
+						"secretVersion": "e3ffdec0940541daaed0908e6a183eff"
+					}
 				},
 				"connectVia": {
 					"referenceName": "integrationRuntime1",
@@ -4388,7 +4397,8 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/integrationRuntime1')]"
+				"[concat(variables('factoryId'), '/integrationRuntimes/integrationRuntime1')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVault1')]"
 			]
 		},
 		{
