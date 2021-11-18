@@ -128,7 +128,7 @@
 						"type": "ForEach",
 						"dependsOn": [
 							{
-								"activity": "Folder_MetaDetails",
+								"activity": "Get File List",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -137,7 +137,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"items": {
-								"value": "@activity('Folder_MetaDetails').output.childItems",
+								"value": "@activity('Get File List').output.Value",
 								"type": "Expression"
 							},
 							"isSequential": false,
@@ -214,11 +214,39 @@
 								}
 							]
 						}
+					},
+					{
+						"name": "Get File List",
+						"type": "Filter",
+						"dependsOn": [
+							{
+								"activity": "Folder_MetaDetails",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Folder_MetaDetails').output.childItems",
+								"type": "Expression"
+							},
+							"condition": {
+								"value": "@equals(item().type,'File')",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"policy": {
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
+				},
+				"variables": {
+					"File_List": {
+						"type": "Array"
+					}
 				},
 				"annotations": [],
 				"lastPublishTime": "2021-10-30T16:14:55Z"
