@@ -1,5 +1,13 @@
 {
 	"name": "demoadf1991",
+	"properties": {
+		"globalParameters": {
+			"Folder_Path_Global": {
+				"type": "string",
+				"value": "AIC/Internal Sources/INV/Oracle/Files/Landing/"
+			}
+		}
+	},
 	"location": "eastus",
 	"identity": {
 		"type": "SystemAssigned",

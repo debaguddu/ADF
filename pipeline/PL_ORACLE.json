@@ -1,10 +1,10 @@
 {
-	"name": "Table_Metadata",
+	"name": "PL_ORACLE",
 	"properties": {
 		"activities": [
 			{
-				"name": "Det_Table_Metadata",
-				"type": "GetMetadata",
+				"name": "Lookup1",
+				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "7.00:00:00",
@@ -15,31 +15,24 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"dataset": {
-						"referenceName": "Read_From_Table",
-						"type": "DatasetReference",
-						"parameters": {
-							"SchemaName": {
-								"value": "@pipeline().parameters.Schema_Name",
-								"type": "Expression"
-							},
-							"TableName": {
-								"value": "@pipeline().parameters.Table_Name",
-								"type": "Expression"
-							}
-						}
+					"source": {
+						"type": "OracleSource",
+						"partitionOption": "None",
+						"queryTimeout": "02:00:00"
 					},
-					"fieldList": [
-						"exists"
-					]
+					"dataset": {
+						"referenceName": "OracleTable1",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
 				}
 			},
 			{
-				"name": "IF Exists",
+				"name": "If Condition1",
 				"type": "IfCondition",
 				"dependsOn": [
 					{
-						"activity": "Det_Table_Metadata",
+						"activity": "Lookup1",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -48,12 +41,12 @@
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@activity('Det_Table_Metadata').output.exists",
+						"value": "@greater(activity('Lookup1').output.count,0)",
 						"type": "Expression"
 					},
 					"ifTrueActivities": [
 						{
-							"name": "CopyTable",
+							"name": "Ora2Blob",
 							"type": "Copy",
 							"dependsOn": [],
 							"policy": {
@@ -66,9 +59,9 @@
 							"userProperties": [],
 							"typeProperties": {
 								"source": {
-									"type": "AzureSqlSource",
-									"queryTimeout": "02:00:00",
-									"partitionOption": "None"
+									"type": "OracleSource",
+									"partitionOption": "None",
+									"queryTimeout": "02:00:00"
 								},
 								"sink": {
 									"type": "DelimitedTextSink",
@@ -93,18 +86,8 @@
 							},
 							"inputs": [
 								{
-									"referenceName": "Read_From_Table",
-									"type": "DatasetReference",
-									"parameters": {
-										"SchemaName": {
-											"value": "@pipeline().parameters.Schema_Name",
-											"type": "Expression"
-										},
-										"TableName": {
-											"value": "@pipeline().parameters.Table_Name",
-											"type": "Expression"
-										}
-									}
+									"referenceName": "OracleTable1",
+									"type": "DatasetReference"
 								}
 							],
 							"outputs": [
@@ -113,11 +96,11 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"Dest_Name": {
-											"value": "@pipeline().Pipeline",
+											"value": "@concat(pipeline().Pipeline,'/',\n                formatdatetime(utcnow(),'yyyy'),'/',\n                formatdatetime(utcnow(),'MM'),'/',\n                formatdatetime(utcnow(),'dd'))\n",
 											"type": "Expression"
 										},
 										"DestFileName": {
-											"value": "@concat(pipeline().parameters.Schema_Name,pipeline().parameters.Table_Name,'.csv')",
+											"value": "@concat('Output_T',\n                formatdatetime(utcnow(),'hhmmss'),\n                '.csv')",
 											"type": "Expression"
 										}
 									}
@@ -128,18 +111,8 @@
 				}
 			}
 		],
-		"parameters": {
-			"Schema_Name": {
-				"type": "string",
-				"defaultValue": "SalesLT"
-			},
-			"Table_Name": {
-				"type": "string",
-				"defaultValue": "Address"
-			}
-		},
 		"annotations": [],
-		"lastPublishTime": "2021-11-14T11:49:05Z"
+		"lastPublishTime": "2021-11-16T04:13:28Z"
 	},
 	"type": "Microsoft.DataFactory/factories/pipelines"
 }
