@@ -1,9 +1,9 @@
 {
-	"name": "PL_Append",
+	"name": "PL_ADLS_to_STAG",
 	"properties": {
 		"activities": [
 			{
-				"name": "Get Metadata1",
+				"name": "Get_Source_Folder_Meta",
 				"type": "GetMetadata",
 				"dependsOn": [],
 				"policy": {
@@ -16,8 +16,14 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataset": {
-						"referenceName": "Input_Csv_MetaData",
-						"type": "DatasetReference"
+						"referenceName": "GetMeta",
+						"type": "DatasetReference",
+						"parameters": {
+							"Folder_check_location": {
+								"value": "@pipeline().globalParameters.Folder_Path_Global",
+								"type": "Expression"
+							}
+						}
 					},
 					"fieldList": [
 						"childItems"
@@ -33,11 +39,11 @@
 				}
 			},
 			{
-				"name": "ForEach_Item",
+				"name": "ForEachGetFolder",
 				"type": "ForEach",
 				"dependsOn": [
 					{
-						"activity": "Get Metadata1",
+						"activity": "Filter_Folders",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -46,17 +52,17 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Get Metadata1').output.childItems",
+						"value": "@activity('Filter_Folders').output.Value",
 						"type": "Expression"
 					},
 					"activities": [
 						{
-							"name": "Append_Out",
+							"name": "Append_SubFolders",
 							"type": "AppendVariable",
 							"dependsOn": [],
 							"userProperties": [],
 							"typeProperties": {
-								"variableName": "OutArray",
+								"variableName": "Sub_Folders",
 								"value": {
 									"value": "@item().name",
 									"type": "Expression"
@@ -67,11 +73,11 @@
 				}
 			},
 			{
-				"name": "Set_DISP_Array",
-				"type": "SetVariable",
+				"name": "Filter_Folders",
+				"type": "Filter",
 				"dependsOn": [
 					{
-						"activity": "ForEach_Item",
+						"activity": "Get_Source_Folder_Meta",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -79,25 +85,55 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"variableName": "DispArray",
-					"value": {
-						"value": "@variables('OutArray')",
+					"items": {
+						"value": "@activity('Get_Source_Folder_Meta').output.childItems",
+						"type": "Expression"
+					},
+					"condition": {
+						"value": "@equals(item().type,'Folder')",
 						"type": "Expression"
 					}
+				}
+			},
+			{
+				"name": "ForEachSubFolder",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "ForEachGetFolder",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@variables('Sub_Folders')",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Wait1",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 1
+							}
+						}
+					]
 				}
 			}
 		],
 		"variables": {
-			"OutArray": {
+			"Sub_Folders": {
 				"type": "Array",
 				"defaultValue": []
-			},
-			"DispArray": {
-				"type": "Array"
 			}
 		},
 		"annotations": [],
-		"lastPublishTime": "2021-11-14T11:49:05Z"
+		"lastPublishTime": "2021-12-10T17:06:12Z"
 	},
 	"type": "Microsoft.DataFactory/factories/pipelines"
 }

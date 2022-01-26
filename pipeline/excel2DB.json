@@ -1,9 +1,9 @@
 {
-	"name": "src_dest_conn",
+	"name": "excel2DB",
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy_Data",
+				"name": "CopyToTable",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -24,17 +24,27 @@
 						}
 					},
 					"sink": {
-						"type": "DelimitedTextSink",
-						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
-						}
+						"type": "AzureSqlSink",
+						"preCopyScript": "TRUNCATE TABLE [New_Table].[Financial]",
+						"tableOption": "autoCreate",
+						"disableMetricsCollection": false
 					},
 					"enableStaging": false,
+					"enableSkipIncompatibleRow": true,
+					"logSettings": {
+						"enableCopyActivityLog": true,
+						"copyActivityLogSettings": {
+							"logLevel": "Warning",
+							"enableReliableLogging": false
+						},
+						"logLocationSettings": {
+							"linkedServiceName": {
+								"referenceName": "Destination_connection",
+								"type": "LinkedServiceReference"
+							},
+							"path": "destination-container/ErrorLog"
+						}
+					},
 					"translator": {
 						"type": "TabularTranslator",
 						"typeConversion": true,
@@ -52,14 +62,14 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "Out_csv",
+						"referenceName": "AzureSqlTable1",
 						"type": "DatasetReference"
 					}
 				]
 			}
 		],
 		"annotations": [],
-		"lastPublishTime": "2021-11-14T11:49:05Z"
+		"lastPublishTime": "2022-01-20T10:35:20Z"
 	},
 	"type": "Microsoft.DataFactory/factories/pipelines"
 }
